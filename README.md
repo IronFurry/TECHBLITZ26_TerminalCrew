@@ -51,6 +51,9 @@ ClinicOS is a sleek, modern, and highly responsive web application designed for 
 |---|---|---|
 | **Receptionist** | `receptionist@clinic.com` | `demo1234` |
 | **Doctor** | `doctor@clinic.com` | `demo1234` |
+| **Patient 1** | `suresh@patient.com` | `demo1234` |
+| **Patient 2** | `meena@patient.com` | `demo1234` |
+| **Patient 3** | `amit@patient.com` | `demo1234` |
 
 ---
 

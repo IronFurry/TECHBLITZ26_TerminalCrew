@@ -1,129 +1,182 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { motion } from 'framer-motion';
-import { Activity, ArrowRight, User, Stethoscope } from 'lucide-react';
-import './LoginPage.css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Activity, ArrowRight, AlertCircle, User, ShieldCheck, Heart } from 'lucide-react';
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
-  const { success, error } = useToast();
+  const { success, error: toastError } = useToast();
+  const [role, setRole] = useState('receptionist'); // receptionist, doctor, patient
+  const [email, setEmail] = useState('receptionist@clinic.com');
+  const [password, setPassword] = useState('demo1234');
+  const [localError, setLocalError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setTimeout(() => {
-      const isSuccess = login(email, password);
-      if (isSuccess) {
-        success('Login successful!');
-        if (email.includes('receptionist')) navigate('/receptionist');
-        if (email.includes('doctor')) navigate('/doctor');
-      } else {
-        error('Invalid credentials. Please try again.');
-      }
-      setIsLoading(false);
-    }, 600);
-  };
+  useEffect(() => {
+    if (role === 'receptionist') {
+      setEmail('receptionist@clinic.com');
+      setPassword('demo1234');
+    } else if (role === 'doctor') {
+      setEmail('doctor@clinic.com');
+      setPassword('demo1234');
+    } else {
+      setEmail('suresh@patient.com');
+      setPassword('demo1234');
+    }
+    setLocalError('');
+  }, [role]);
 
-  const fillDemo = (role) => {
-    setEmail(`${role}@clinic.com`);
-    setPassword('demo1234');
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setLocalError('');
+    try {
+      const user = login(email, password);
+      success(`Welcome back, ${user.name}!`);
+      if (user.role === 'receptionist') navigate('/receptionist');
+      else if (user.role === 'doctor') navigate('/doctor');
+      else navigate('/patient/dashboard');
+    } catch (err) {
+      setLocalError(err.message);
+      toastError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-visual">
-        <div className="visual-content">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="logo-wrapper"
-          >
-            <Activity size={48} className="logo-icon" />
-          </motion.div>
-          <motion.h1
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-          >
-            ClinicOS
-          </motion.h1>
-          <motion.p
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Streamlined Appointment & Scheduling System
-          </motion.p>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'var(--background)',
+      padding: '1rem'
+    }}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4 }}
+        className="card"
+        style={{ width: '100%', maxWidth: '440px', padding: '2.5rem' }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            background: 'var(--brand-500)',
+            color: 'white',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 1rem'
+          }}>
+            <Activity size={28} />
+          </div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>ClinicOS</h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Appointment & Scheduling System</p>
         </div>
-        <div className="visual-pattern"></div>
-      </div>
 
-      <div className="login-form-wrapper">
-        <motion.div
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          className="login-card"
-        >
-          <div className="login-header">
-            <h2>Welcome Back</h2>
-            <p>Please log in to your account</p>
+        {/* Role Selector */}
+        <div className="pill-toggle" style={{ marginBottom: '2rem', width: '100%' }}>
+          {['receptionist', 'doctor', 'patient'].map((r) => (
+            <div
+              key={r}
+              className={`pill-item ${role === r ? 'active' : ''}`}
+              onClick={() => setRole(r)}
+              style={{ flex: 1, textAlign: 'center', textTransform: 'capitalize' }}
+            >
+              {r}
+            </div>
+          ))}
+        </div>
+
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Email Address</label>
+            <input
+              type="email"
+              className="input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            {role === 'patient' && (
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                Demo: suresh@patient.com / meena@patient.com / amit@patient.com
+              </span>
+            )}
           </div>
 
-          <form onSubmit={handleLogin} className="login-form">
-            <div className="input-group">
-              <label>Email Address</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-              />
-            </div>
-            <div className="input-group">
-              <label>Password</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-              />
-            </div>
-
-            <button type="submit" className="submit-btn" disabled={isLoading}>
-              {isLoading ? (
-                <div className="spinner"></div>
-              ) : (
-                <>
-                  Sign In
-                  <ArrowRight size={18} />
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="demo-section">
-            <p>Demo Credentials</p>
-            <div className="demo-buttons">
-              <button type="button" onClick={() => fillDemo('receptionist')} className="demo-btn">
-                <User size={16} /> Receptionist
-              </button>
-              <button type="button" onClick={() => fillDemo('doctor')} className="demo-btn secondary">
-                <Stethoscope size={16} /> Doctor
-              </button>
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Password</label>
+            <input
+              type="password"
+              className="input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
-        </motion.div>
-      </div>
+
+          <AnimatePresence>
+            {localError && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  color: 'var(--danger)',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  background: 'var(--danger-bg)',
+                  padding: '0.75rem',
+                  borderRadius: 'var(--radius-input)',
+                  border: '1px solid var(--danger-text)',
+                  overflow: 'hidden'
+                }}
+              >
+                <AlertCircle size={16} />
+                {localError}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            className="btn btn-primary"
+            style={{ width: '100%', height: '44px' }}
+            disabled={loading}
+          >
+            {loading ? <div className="spinner" style={{ width: '20px', height: '20px', border: '2px solid white', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.6s linear infinite' }} /> : "Sign In"}
+            {!loading && <ArrowRight size={18} />}
+          </motion.button>
+        </form>
+
+        <div style={{ marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', textAlign: 'center' }}>
+          <div>
+            <div style={{ color: 'var(--brand-500)', marginBottom: '0.25rem' }}><ShieldCheck size={20} style={{ margin: '0 auto' }} /></div>
+            <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Secure</div>
+          </div>
+          <div>
+            <div style={{ color: 'var(--success)', marginBottom: '0.25rem' }}><Activity size={20} style={{ margin: '0 auto' }} /></div>
+            <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Real-time</div>
+          </div>
+          <div>
+            <div style={{ color: 'var(--danger)', marginBottom: '0.25rem' }}><Heart size={20} style={{ margin: '0 auto' }} /></div>
+            <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Care-first</div>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };

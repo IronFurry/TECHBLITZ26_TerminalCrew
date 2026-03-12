@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ClinicOS - Voice Assistant Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1a6aff",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#0f1623",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .mic-pulse {
+            box-shadow: 0 0 0 0 rgba(26, 106, 255, 0.7);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(26, 106, 255, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(26, 106, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(26, 106, 255, 0); }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 lg:px-10">
+<div class="flex items-center gap-4 text-primary">
+<div class="size-8 flex items-center justify-center bg-primary/10 rounded-lg">
+<span class="material-symbols-outlined text-primary text-2xl">clinical_notes</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight">ClinicOS</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 lg:gap-8 items-center">
+<label class="hidden md:flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full bg-slate-100 dark:bg-slate-800">
+<div class="text-slate-500 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:ring-0 h-full placeholder:text-slate-500 px-4 text-sm" placeholder="Search patients, records..."/>
+</div>
+</label>
+<div class="flex gap-2">
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Sidebar -->
+<aside class="hidden lg:flex w-64 flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2 rounded-xl bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-semibold">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-sm font-medium">Calendar</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Patients</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">mic</span>
+<span class="text-sm font-medium">Voice Logs</span>
+</a>
+<hr class="my-2 border-slate-100 dark:border-slate-800"/>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto p-6 lg:p-10 relative">
+<div class="max-w-5xl mx-auto">
+<header class="mb-8">
+<h1 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Clinic Overview</h1>
+<p class="text-slate-500 dark:text-slate-400">Welcome back, Dr. Smith. Here is what's happening today.</p>
+</header>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Today's Appointments</p>
+<p class="text-3xl font-bold text-slate-900 dark:text-white">12</p>
+<div class="mt-2 text-xs text-emerald-500 font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> 2 more than yesterday
+                                </div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Pending Tasks</p>
+<p class="text-3xl font-bold text-slate-900 dark:text-white">4</p>
+<div class="mt-2 text-xs text-amber-500 font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">priority_high</span> High priority
+                                </div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Voice Transcriptions</p>
+<p class="text-3xl font-bold text-slate-900 dark:text-white">28</p>
+<div class="mt-2 text-xs text-primary font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">check_circle</span> All synced
+                                </div>
+</div>
+</div>
+<!-- Schedule Preview -->
+<div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<h3 class="font-bold text-slate-900 dark:text-white">Upcoming Appointments</h3>
+<button class="text-primary text-sm font-semibold">View All</button>
+</div>
+<div class="divide-y divide-slate-100 dark:divide-slate-800">
+<div class="p-4 flex items-center gap-4">
+<div class="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">JD</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Jane Doe</p>
+<p class="text-xs text-slate-500">Annual Checkup • 10:30 AM</p>
+</div>
+<span class="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold rounded uppercase">Confirmed</span>
+</div>
+<div class="p-4 flex items-center gap-4">
+<div class="h-10 w-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center font-bold">MS</div>
+<div class="flex-1">
+<p class="text-sm font-bold text-slate-900 dark:text-white">Mark Sloan</p>
+<p class="text-xs text-slate-500">Follow-up • 11:15 AM</p>
+</div>
+<span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold rounded uppercase">Pending</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+<!-- FLOATING VOICE ASSISTANT WIDGET -->
+<div class="fixed bottom-6 right-6 z-50 w-80 lg:w-96">
+<div class="bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col">
+<!-- Header / Language Selector -->
+<div class="p-4 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between border-b border-slate-200 dark:border-slate-700">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">record_voice_over</span>
+<span class="text-sm font-bold text-slate-900 dark:text-white">ClinicOS Voice</span>
+</div>
+<div class="flex gap-1 bg-slate-200 dark:bg-slate-700 p-1 rounded-lg">
+<button class="px-2 py-0.5 text-[10px] font-bold rounded bg-white dark:bg-slate-600 text-primary shadow-sm">EN</button>
+<button class="px-2 py-0.5 text-[10px] font-bold rounded text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-600/50">HI</button>
+<button class="px-2 py-0.5 text-[10px] font-bold rounded text-slate-500 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-600/50">MR</button>
+</div>
+</div>
+<!-- Main Interaction Area -->
+<div class="p-5 flex flex-col items-center gap-6">
+<!-- Status Indicator -->
+<div class="flex flex-col items-center gap-1">
+<div class="flex items-center gap-2 text-primary">
+<span class="flex h-2 w-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-xs font-bold uppercase tracking-widest">Listening...</span>
+</div>
+</div>
+<!-- Microphone Pulse -->
+<div class="relative flex items-center justify-center">
+<div class="mic-pulse absolute w-20 h-20 rounded-full bg-primary/20"></div>
+<button class="relative z-10 h-16 w-16 bg-primary text-white rounded-full flex items-center justify-center shadow-lg hover:bg-primary/90 transition-all active:scale-95">
+<span class="material-symbols-outlined text-3xl">mic</span>
+</button>
+</div>
+<!-- Transcript Areas -->
+<div class="w-full flex flex-col gap-4">
+<!-- Patient Transcript -->
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Patient said</p>
+<div class="bg-slate-100 dark:bg-slate-800 p-3 rounded-lg text-sm text-slate-700 dark:text-slate-300 border-l-4 border-primary/40">
+                                "I would like to book an appointment for next Tuesday afternoon with Dr. Smith for my back pain..."
+                            </div>
+</div>
+<!-- AI Reply -->
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-primary uppercase tracking-tighter">ClinicOS Reply</p>
+<div class="bg-primary/5 dark:bg-primary/10 p-3 rounded-lg text-sm text-slate-800 dark:text-slate-200 border border-primary/20 italic">
+                                "Booking confirmed for Tuesday, Oct 24th at 2:30 PM. I've added this to your calendar and sent a confirmation SMS."
+                            </div>
+</div>
+</div>
+</div>
+<!-- Footer Status -->
+<div class="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-emerald-500">check_circle</span>
+<span class="text-[11px] font-medium text-slate-500">Done. Syncing to EMR...</span>
+</div>
+<button class="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors">Clear</button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

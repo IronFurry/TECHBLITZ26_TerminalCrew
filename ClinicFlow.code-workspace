@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "ClinicFlow",
+			"path": "."
+		},
+		{
+			"name": "stitch",
+			"path": "../../../Downloads/stitch/stitch"
+		}
+	],
+	"settings": {}
+}

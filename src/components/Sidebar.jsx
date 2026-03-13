@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, CalendarPlus, Users, Bell, Calendar, Activity, LogOut } from 'lucide-react';
+import { LayoutDashboard, CalendarPlus, Users, Bell, Calendar, Activity, LogOut, Stethoscope } from 'lucide-react';
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
@@ -20,17 +20,24 @@ const Sidebar = () => {
   return (
     <aside className="sidebar" style={{
       width: 'var(--sidebar-width)',
-      height: 'calc(100vh - var(--navbar-height))',
-      background: 'var(--surface)',
-      borderRight: '1px solid var(--border)',
-      padding: '1.5rem',
+      height: '100vh',
+      background: 'var(--sidebar-blue)',
+      padding: '2rem 1.5rem',
       display: 'flex',
       flexDirection: 'column',
-      position: 'fixed',
-      left: 0,
-      top: 'var(--navbar-height)',
-      zIndex: 90
+      position: 'sticky',
+      top: 0,
+      zIndex: 110,
+      color: 'white',
+      boxShadow: '4px 0 10px rgba(0,0,0,0.05)'
     }}>
+      <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '3rem', padding: '0 0.5rem' }}>
+        <div style={{ background: 'white', color: 'var(--brand-500)', padding: '0.5rem', borderRadius: '12px', display: 'flex' }}>
+          <Stethoscope size={24} />
+        </div>
+        <span style={{ fontSize: '1.5rem', fontWeight: 800, tracking: '-0.025em' }}>clinicOS</span>
+      </div>
+
       <div className="sidebar-nav" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         {links.map(link => (
           <NavLink
@@ -40,12 +47,12 @@ const Sidebar = () => {
             style={({ isActive }) => ({
               display: 'flex',
               alignItems: 'center',
-              gap: '0.75rem',
-              padding: '0.75rem 1rem',
-              borderRadius: 'var(--radius-input)',
+              gap: '1rem',
+              padding: '0.875rem 1.25rem',
+              borderRadius: 'var(--radius-pill)',
               textDecoration: 'none',
-              color: isActive ? 'var(--brand-500)' : 'var(--text-secondary)',
-              background: isActive ? 'var(--brand-50)' : 'transparent',
+              color: isActive ? 'white' : 'rgba(255, 255, 255, 0.7)',
+              background: isActive ? 'rgba(255, 255, 255, 0.15)' : 'transparent',
               fontWeight: isActive ? 700 : 500,
               transition: 'var(--transition)'
             })}
@@ -58,7 +65,17 @@ const Sidebar = () => {
         ))}
       </div>
       
-      <button onClick={logout} className="btn-ghost" style={{ justifyContent: 'flex-start', marginTop: 'auto' }}>
+      <button 
+        onClick={logout} 
+        className="btn-ghost" 
+        style={{ 
+          justifyContent: 'flex-start', 
+          marginTop: 'auto', 
+          color: 'rgba(255, 255, 255, 0.8)',
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '0.75rem 1.25rem'
+        }}
+      >
         <LogOut size={20} />
         <span>Logout</span>
       </button>

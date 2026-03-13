@@ -1,60 +1,85 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { patientUsers } from '../lib/mockData';
+import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext();
 
-const MOCK_USERS = {
-  'receptionist@clinic.com': { 
-    password: 'demo1234', 
-    role: 'receptionist', 
-    name: 'Riya Kapoor', 
-    initials: 'RK' 
-  },
-  'doctor@clinic.com': { 
-    password: 'demo1234', 
-    role: 'doctor', 
-    name: 'Dr. Priya Sharma', 
-    initials: 'PS' 
-  },
-  ...Object.fromEntries(
-    patientUsers.map(u => [
-      u.email, 
-      { password: u.password, role: 'patient', name: u.name, initials: u.initials, patientId: u.id }
-    ])
-  )
-};
-
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('clinic_user');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (email, password) => {
-    const found = MOCK_USERS[email];
-    if (found && found.password === password) {
-      const userData = { 
-        email, 
-        role: found.role, 
-        name: found.name, 
-        initials: found.initials,
-        ...(found.patientId && { patientId: found.patientId })
-      };
-      setUser(userData);
-      localStorage.setItem('clinic_user', JSON.stringify(userData));
-      return userData;
-    }
-    throw new Error("Invalid credentials");
+  useEffect(() => {
+    // Check active sessions and sets the user
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          role: session.user.user_metadata?.role || 'patient',
+          name: session.user.user_metadata?.name || 'User',
+          initials: session.user.user_metadata?.initials || 'U'
+        });
+      }
+      setLoading(false);
+    });
+
+    // Listen for changes on auth state (logged in, signed out, etc.)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          role: session.user.user_metadata?.role || 'patient',
+          name: session.user.user_metadata?.name || 'User',
+          initials: session.user.user_metadata?.initials || 'U'
+        });
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const login = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) throw error;
+    return data.user;
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('clinic_user');
+  const signup = async (email, password, metadata) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: metadata
+      }
+    });
+    if (error) throw error;
+    return data.user;
+  };
+
+  const loginWithGoogle = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+    if (error) throw error;
+    return data;
+  };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
+    <AuthContext.Provider value={{ user, login, signup, logout, loginWithGoogle, loading }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

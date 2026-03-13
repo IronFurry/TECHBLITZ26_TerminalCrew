@@ -7,13 +7,12 @@ import VoiceAssistant from './VoiceAssistant';
 
 const Layout = () => {
   return (
-    <div className="layout-root" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <Navbar />
-      <div style={{ display: 'flex', flex: 1 }}>
-        <Sidebar />
+    <div className="layout-root" style={{ minHeight: '100vh', display: 'flex' }}>
+      <Sidebar />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        <Navbar />
         <main className="main-content" style={{
           flex: 1,
-          marginLeft: 'var(--sidebar-width)',
           padding: '2rem',
           background: 'var(--background)',
           minHeight: 'calc(100vh - var(--navbar-height))',
@@ -27,8 +26,10 @@ const Layout = () => {
 
       <style>{`
         @media (max-width: 768px) {
+          .layout-root {
+            flex-direction: column;
+          }
           .main-content {
-            margin-left: 0 !important;
             padding: 1rem !important;
             padding-bottom: calc(64px + 2rem + env(safe-area-inset-bottom)) !important;
           }
